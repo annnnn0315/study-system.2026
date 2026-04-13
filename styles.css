@@ -145,6 +145,23 @@ h1 {
   grid-column: 1 / -1;
 }
 
+.insights-toggle {
+  margin-top: 14px;
+}
+
+.insights-toggle summary {
+  list-style: none;
+  display: inline-block;
+}
+
+.insights-toggle summary::-webkit-details-marker {
+  display: none;
+}
+
+.insights-content {
+  margin-top: 12px;
+}
+
 .panel-header {
   display: flex;
   justify-content: space-between;
@@ -399,6 +416,18 @@ textarea {
 .empty-state {
   color: var(--muted);
   padding: 14px 0 4px;
+}
+
+.weekly-placeholder {
+  display: grid;
+  place-items: center;
+  min-height: 140px;
+  text-align: center;
+  border-radius: 20px;
+  border: 1px dashed rgba(29, 27, 24, 0.16);
+  background: rgba(255, 255, 255, 0.45);
+  color: var(--muted);
+  padding: 18px;
 }
 
 @media (max-width: 920px) {

@@ -2,7 +2,6 @@ import { createPlanner } from "./lib/planner.js";
 import { createStore } from "./lib/store.js";
 import { buildPriorityOverview, buildProgressOverview, buildWeeklySummary } from "./lib/analytics.js";
 import {
-  renderPriorityOverview,
   renderProgressOverview,
   renderReviewForm,
   renderTodayDashboard,
@@ -190,7 +189,6 @@ async function bootstrap() {
     });
     const priority = buildPriorityOverview({
       store,
-      config,
       plan,
       currentDate,
       overview
@@ -199,10 +197,7 @@ async function bootstrap() {
     showDateChip(document.getElementById("date-chip"), plan);
     renderProgressOverview({
       container: document.getElementById("progress-overview"),
-      overview
-    });
-    renderPriorityOverview({
-      container: document.getElementById("priority-overview"),
+      overview,
       priority
     });
     renderTodayDashboard({
