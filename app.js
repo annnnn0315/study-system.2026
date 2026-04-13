@@ -9,6 +9,121 @@ import {
   normalizeWeeklyStructure
 } from "./lib/config-adapters.js";
 
+const NOTIFICATION_PREF_KEY = "study-system-notifications-requested-v1";
+const REMINDERS = [
+  { hour: 9, minute: 0, title: "IELTS session", body: "Time for your IELTS session." },
+  { hour: 13, minute: 0, title: "Law study", body: "Time for your law study block." },
+  { hour: 23, minute: 59, title: "Evening review", body: "Wrap up the day with your evening review." }
+];
+
+let reminderTimeouts = [];
+let reminderRolloverTimeout = null;
+
+function setReminderBanner(message = "") {
+  const element = document.getElementById("reminder-banner");
+  if (!element) {
+    return;
+  }
+  if (!message) {
+    element.hidden = true;
+    element.textContent = "";
+    return;
+  }
+  element.hidden = false;
+  element.textContent = message;
+}
+
+function clearReminderTimers() {
+  reminderTimeouts.forEach((timeoutId) => window.clearTimeout(timeoutId));
+  reminderTimeouts = [];
+  if (reminderRolloverTimeout) {
+    window.clearTimeout(reminderRolloverTimeout);
+    reminderRolloverTimeout = null;
+  }
+}
+
+function nextDelay(hour, minute) {
+  const now = new Date();
+  const target = new Date();
+  target.setHours(hour, minute, 0, 0);
+  const delay = target.getTime() - now.getTime();
+  return delay > 0 ? delay : null;
+}
+
+function delayUntilTomorrow() {
+  const now = new Date();
+  const tomorrow = new Date();
+  tomorrow.setDate(now.getDate() + 1);
+  tomorrow.setHours(0, 0, 5, 0);
+  return tomorrow.getTime() - now.getTime();
+}
+
+function sendReminderNotification(title, body) {
+  try {
+    new Notification(title, { body });
+  } catch (error) {
+    console.error("[study-system] Failed to send notification", error);
+    setReminderBanner("Browser notifications could not be delivered. Keep the dashboard open and use the page reminders instead.");
+  }
+}
+
+function scheduleReminderTimers() {
+  clearReminderTimers();
+  if (!("Notification" in window) || Notification.permission !== "granted") {
+    return;
+  }
+
+  REMINDERS.forEach((reminder) => {
+    const delay = nextDelay(reminder.hour, reminder.minute);
+    if (delay === null) {
+      return;
+    }
+    const timeoutId = window.setTimeout(() => {
+      sendReminderNotification(reminder.title, reminder.body);
+    }, delay);
+    reminderTimeouts.push(timeoutId);
+  });
+
+  reminderRolloverTimeout = window.setTimeout(() => {
+    scheduleReminderTimers();
+  }, delayUntilTomorrow());
+}
+
+async function initializeNotifications() {
+  if (!("Notification" in window)) {
+    setReminderBanner("Browser notifications are not supported here. Morning, afternoon, and evening reminders will need to be checked inside the page.");
+    return;
+  }
+
+  if (Notification.permission === "granted") {
+    setReminderBanner("");
+    scheduleReminderTimers();
+    return;
+  }
+
+  if (Notification.permission === "denied") {
+    setReminderBanner("Notifications are blocked in this browser. Keep the dashboard open and use the in-page reminders instead.");
+    return;
+  }
+
+  const requestedBefore = window.localStorage.getItem(NOTIFICATION_PREF_KEY) === "true";
+  if (!requestedBefore) {
+    window.localStorage.setItem(NOTIFICATION_PREF_KEY, "true");
+    try {
+      const permission = await Notification.requestPermission();
+      if (permission === "granted") {
+        setReminderBanner("");
+        scheduleReminderTimers();
+        return;
+      }
+    } catch (error) {
+      console.error("[study-system] Notification permission request failed", error);
+    }
+  }
+
+  setReminderBanner("Enable browser notifications to get reminders for IELTS, law study, and evening review. If blocked, keep this page open as a reminder hub.");
+}
+
 async function loadJson(path, fallback) {
   try {
     const response = await fetch(path);
@@ -112,6 +227,7 @@ async function bootstrap() {
   });
 
   refresh();
+  initializeNotifications();
 }
 
 bootstrap().catch((error) => {

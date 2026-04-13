@@ -49,6 +49,16 @@ select {
   margin-bottom: 28px;
 }
 
+.reminder-banner {
+  margin: -6px 0 18px;
+  border-radius: 18px;
+  border: 1px solid rgba(146, 91, 24, 0.18);
+  background: var(--warning-soft);
+  color: var(--warning);
+  padding: 12px 14px;
+  box-shadow: var(--shadow);
+}
+
 .eyebrow,
 .panel-kicker,
 .mini-label {
