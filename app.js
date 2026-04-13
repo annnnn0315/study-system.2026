@@ -167,11 +167,26 @@ function todayKey() {
   return `${year}-${month}-${day}`;
 }
 
+function formatTimeLabel(isoString) {
+  if (!isoString) {
+    return null;
+  }
+  return new Intl.DateTimeFormat("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false
+  }).format(new Date(isoString));
+}
+
 async function bootstrap() {
   const config = await loadConfig();
   const store = createStore();
   const planner = createPlanner(config, store);
   const currentDate = todayKey();
+  const feedbackState = {
+    tracking: null,
+    review: null
+  };
 
   const refresh = () => {
     const plan = planner.ensureDay(currentDate);
@@ -212,9 +227,12 @@ async function bootstrap() {
     renderTrackingForm({
       container: document.getElementById("tracking-form"),
       tracking: store.getTracking(currentDate),
+      lastUpdatedAt: formatTimeLabel(store.getTrackingMeta(currentDate)?.updatedAt),
+      saveFeedback: feedbackState.tracking,
       lawSubjects: plan.law?.subjects ?? [],
       onSubmit: (payload) => {
-        store.saveTracking(currentDate, payload);
+        const result = store.saveTracking(currentDate, payload);
+        feedbackState.tracking = result.changed ? "Updated today's daily tracking" : "No changes to save";
         planner.ensureDay(currentDate, { forceRefresh: true });
         refresh();
       }
@@ -223,9 +241,12 @@ async function bootstrap() {
     renderReviewForm({
       container: document.getElementById("review-form"),
       review: store.getReview(currentDate),
+      lastUpdatedAt: formatTimeLabel(store.getReviewMeta(currentDate)?.updatedAt),
+      saveFeedback: feedbackState.review,
       checklist: config.reviewChecklist,
       onSubmit: (payload) => {
-        store.saveReview(currentDate, payload);
+        const result = store.saveReview(currentDate, payload);
+        feedbackState.review = result.changed ? "Updated today's evening review" : "No changes to save";
         planner.ensureDay(currentDate, { forceRefresh: true, includeNextDay: true });
         refresh();
       }

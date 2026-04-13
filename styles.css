@@ -418,6 +418,12 @@ textarea {
   padding: 14px 0 4px;
 }
 
+.save-feedback {
+  margin-top: 8px;
+  color: var(--accent);
+  font-weight: 600;
+}
+
 .weekly-placeholder {
   display: grid;
   place-items: center;
