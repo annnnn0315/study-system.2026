@@ -561,3 +561,10 @@ textarea {
     white-space: normal;
   }
 }
+
+@media (min-width: 1024px) {
+  .hero-copy {
+    white-space: nowrap;
+    font-size: clamp(14px, 1.2vw, 18px);
+  }
+}
