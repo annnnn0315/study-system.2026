@@ -1,0 +1,47 @@
+{
+  "examDate": "2026-07-18",
+  "ieltsStartDate": "2026-04-14",
+  "phaseTimeline": [
+    {
+      "name": "Phase 1",
+      "label": "Foundation",
+      "start": "2026-04-14",
+      "end": "2026-05-15",
+      "intensity": "light"
+    },
+    {
+      "name": "Phase 2",
+      "label": "Improvement",
+      "start": "2026-05-16",
+      "end": "2026-06-15",
+      "intensity": "medium"
+    },
+    {
+      "name": "Phase 3",
+      "label": "Sprint",
+      "start": "2026-06-16",
+      "end": "2026-07-18",
+      "intensity": "high"
+    }
+  ],
+  "busyDays": {
+    "1": {
+      "label": "Heavy class day",
+      "lawHours": 5,
+      "ieltsModifier": "light"
+    },
+    "3": {
+      "label": "Moderate class day",
+      "lawHours": 5,
+      "ieltsModifier": "medium"
+    }
+  },
+  "defaultLawHours": 6,
+  "dailyExtraLoadCap": 0.3,
+  "adaptiveThresholds": {
+    "ieltsAccuracyFloor": 80,
+    "lawAccuracyFloor": 70,
+    "repeatIssueDays": 2,
+    "weakAreaWindowDays": 7
+  }
+}

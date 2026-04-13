@@ -1,0 +1,192 @@
+{
+  "0": [
+    {
+      "type": "listening",
+      "title": "Listening S1",
+      "detail": "Do Section 1 (10–15 min) and review 2–3 wrong sentences.",
+      "baseMinutes": 15,
+      "phaseIntensity": {
+        "light": "Keep it light: one clean Section 1 plus short error review.",
+        "medium": "Add one replay for missed items.",
+        "high": "Replay missed items and shadow 3–5 sentences."
+      }
+    },
+    {
+      "type": "speaking",
+      "title": "Speaking Part 1–2",
+      "detail": "Light speaking practice for 20–30 minutes.",
+      "baseMinutes": 25,
+      "phaseIntensity": {
+        "light": "Untimed speaking.",
+        "medium": "Track fillers and retry one answer.",
+        "high": "Add one timed Part 2 response."
+      }
+    }
+  ],
+  "1": [
+    {
+      "type": "writing",
+      "title": "Task 2 core practice",
+      "detail": "Write one Task 2 essay.",
+      "baseMinutes": 40,
+      "phaseIntensity": {
+        "light": "Write Task 2 and do light revision.",
+        "medium": "Write Task 2 and revise thesis + topic sentences deeply.",
+        "high": "Complete Task 2 under timed conditions."
+      }
+    },
+    {
+      "type": "reading",
+      "title": "Reading Passage 1",
+      "detail": "Do Passage 1 (18–20 min) and review wrong paragraph(s).",
+      "baseMinutes": 20,
+      "phaseIntensity": {
+        "light": "One passage only.",
+        "medium": "One passage plus short error mapping.",
+        "high": "One passage plus 3–5 speed questions."
+      }
+    }
+  ],
+  "2": [
+    {
+      "type": "reading",
+      "title": "Reading 5–8 questions",
+      "detail": "Do 5–8 questions and deep-read wrong paragraphs.",
+      "baseMinutes": 20,
+      "phaseIntensity": {
+        "light": "Do 5–8 questions only.",
+        "medium": "Do 5–8 questions and review answer location.",
+        "high": "Add a short timed skim drill."
+      }
+    },
+    {
+      "type": "speaking",
+      "title": "Speaking timed practice",
+      "detail": "Speaking practice for 30 minutes.",
+      "baseMinutes": 30,
+      "phaseIntensity": {
+        "light": "Untimed speaking.",
+        "medium": "Timed answers.",
+        "high": "Timed answers with one mock mini-run."
+      }
+    }
+  ],
+  "3": [
+    {
+      "type": "writing",
+      "title": "Task 2 second practice",
+      "detail": "Write one Task 2 essay.",
+      "baseMinutes": 40,
+      "phaseIntensity": {
+        "light": "Write and do light revision.",
+        "medium": "Write and upgrade 2 key sentences.",
+        "high": "Timed Task 2 plus weakest paragraph rewrite."
+      }
+    },
+    {
+      "type": "listening",
+      "title": "Listening S2",
+      "detail": "Do Section 2 and error analysis.",
+      "baseMinutes": 20,
+      "phaseIntensity": {
+        "light": "One mixed set and short review.",
+        "medium": "Review all distractors.",
+        "high": "Add repeat on missed questions."
+      }
+    }
+  ],
+  "4": [
+    {
+      "type": "writing",
+      "title": "Task 1 visual writing",
+      "detail": "Write one Task 1 response.",
+      "baseMinutes": 30,
+      "phaseIntensity": {
+        "light": "Single draft and basic revision.",
+        "medium": "Revise overview + comparisons.",
+        "high": "Timed Task 1 and sentence variety check."
+      }
+    },
+    {
+      "type": "light_practice",
+      "title": "Light listening or reading",
+      "detail": "Choose one light listening/reading task for 15–20 minutes.",
+      "baseMinutes": 20,
+      "phaseIntensity": {
+        "light": "Choose one light task only.",
+        "medium": "Add quick error sorting.",
+        "high": "Add short accuracy log."
+      }
+    }
+  ],
+  "5": [
+    {
+      "type": "speaking",
+      "title": "Full speaking mock",
+      "detail": "Run a full Part 1–3 speaking mock.",
+      "baseMinutes": 20,
+      "phaseIntensity": {
+        "light": "Single run.",
+        "medium": "Run and retry weak answers.",
+        "high": "Run, retry, and self-score."
+      }
+    },
+    {
+      "type": "writing_review",
+      "title": "Writing review",
+      "detail": "Extract 3 useful phrases and 1 template from this week’s writing.",
+      "baseMinutes": 30,
+      "phaseIntensity": {
+        "light": "3 phrases + 1 template.",
+        "medium": "3 phrases + 1 template + 1 rewrite.",
+        "high": "3 phrases + 1 template + annotate weakest paragraph."
+      }
+    },
+    {
+      "type": "reading",
+      "title": "Reading Passage 2",
+      "detail": "Do Passage 2 or a slightly heavier reading block.",
+      "baseMinutes": 20,
+      "phaseIntensity": {
+        "light": "One passage only.",
+        "medium": "Alternate with one fuller reading/listening block weekly.",
+        "high": "Prefer one fuller mock-style block."
+      }
+    }
+  ],
+  "6": [
+    {
+      "type": "listening",
+      "title": "Light Listening S1",
+      "detail": "Do one light Section 1 set.",
+      "baseMinutes": 15,
+      "phaseIntensity": {
+        "light": "Simple reset practice.",
+        "medium": "Reset practice plus short review.",
+        "high": "Reset practice plus short dictation."
+      }
+    },
+    {
+      "type": "speaking",
+      "title": "Light speaking",
+      "detail": "Do 20 minutes of light speaking practice.",
+      "baseMinutes": 20,
+      "phaseIntensity": {
+        "light": "Single run.",
+        "medium": "One run + one retry.",
+        "high": "One run + one timed answer."
+      }
+    },
+    {
+      "type": "review",
+      "title": "Weekly review",
+      "detail": "List 3 weaknesses and write fix strategies.",
+      "baseMinutes": 20,
+      "phaseIntensity": {
+        "light": "3 weaknesses + fixes.",
+        "medium": "3 weaknesses + fixes + next-week priority.",
+        "high": "3 weaknesses + fixes + priority + carry-over cleanup."
+      }
+    }
+  ]
+}

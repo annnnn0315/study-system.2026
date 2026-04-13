@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Study System</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <script>
+      (function () {
+        const password = window.prompt("Enter password:");
+        if (password !== "study2026") {
+          document.body.innerHTML = "Access Denied";
+          throw new Error("Access denied");
+        }
+      })();
+    </script>
+    <div class="app-shell">
+      <header class="hero">
+        <div>
+          <p class="eyebrow">Personal Study System</p>
+          <h1>Know exactly what to do today.</h1>
+          <p class="hero-copy">
+            IELTS in the morning, law in the afternoon, and daily adjustments
+            that stay small and clear.
+          </p>
+        </div>
+        <div class="hero-chip" id="date-chip"></div>
+      </header>
+
+      <main class="grid">
+        <section class="panel panel-progress">
+          <div class="panel-header">
+            <div>
+              <p class="panel-kicker">At A Glance</p>
+              <h2>Progress Overview</h2>
+            </div>
+          </div>
+          <div id="progress-overview"></div>
+        </section>
+
+        <section class="panel panel-today">
+          <div class="panel-header">
+            <div>
+              <p class="panel-kicker">Highest Priority</p>
+              <h2>Today</h2>
+            </div>
+            <button id="reset-today" class="ghost-button" type="button">
+              Regenerate Today
+            </button>
+          </div>
+          <div id="today-dashboard"></div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-header">
+            <div>
+              <p class="panel-kicker">Daily Input</p>
+              <h2>Completion Tracker</h2>
+            </div>
+          </div>
+          <form id="tracking-form" class="stack"></form>
+        </section>
+
+        <section class="panel">
+          <div class="panel-header">
+            <div>
+              <p class="panel-kicker">Critical Loop</p>
+              <h2>Evening Review</h2>
+            </div>
+          </div>
+          <form id="review-form" class="stack"></form>
+        </section>
+
+        <section class="panel">
+          <div class="panel-header">
+            <div>
+              <p class="panel-kicker">7-Day View</p>
+              <h2>Weekly Summary</h2>
+            </div>
+          </div>
+          <div id="weekly-summary"></div>
+        </section>
+      </main>
+    </div>
+
+    <template id="task-item-template">
+      <label class="task-item">
+        <input type="checkbox" class="task-checkbox" />
+        <span class="task-copy">
+          <strong class="task-title"></strong>
+          <span class="task-detail"></span>
+          <span class="task-meta"></span>
+        </span>
+      </label>
+    </template>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
