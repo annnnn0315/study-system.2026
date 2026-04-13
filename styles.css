@@ -54,10 +54,6 @@ select {
   margin-bottom: 28px;
 }
 
-.hero-content {
-  min-width: 0;
-}
-
 .reminder-banner {
   margin: -6px 0 18px;
   border-radius: 18px;
@@ -576,10 +572,6 @@ textarea {
     align-items: start;
     column-gap: 18px;
     row-gap: 8px;
-  }
-
-  .hero-content {
-    display: contents;
   }
 
   .hero-title-group {
