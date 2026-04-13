@@ -54,6 +54,10 @@ select {
   margin-bottom: 28px;
 }
 
+.hero-content {
+  min-width: 0;
+}
+
 .reminder-banner {
   margin: -6px 0 18px;
   border-radius: 18px;
@@ -563,8 +567,45 @@ textarea {
 }
 
 @media (min-width: 1024px) {
+  .hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      "title badge"
+      "subtitle subtitle";
+    align-items: start;
+    column-gap: 18px;
+    row-gap: 8px;
+  }
+
+  .hero-content {
+    display: contents;
+  }
+
+  .hero-title-group {
+    grid-area: title;
+    min-width: 0;
+  }
+
   .hero-copy {
+    grid-area: subtitle;
     white-space: nowrap;
     font-size: clamp(14px, 1.2vw, 18px);
+    max-width: none;
+    min-width: 0;
+  }
+
+  .hero-chip {
+    grid-area: badge;
+    align-self: start;
+    justify-self: end;
+    white-space: nowrap;
+  }
+}
+
+@media (min-width: 1024px) {
+  .hero-copy {
+    white-space: nowrap;
+    max-width: none;
   }
 }
