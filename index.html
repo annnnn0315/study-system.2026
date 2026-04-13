@@ -30,9 +30,14 @@
       </header>
 
       <div id="reminder-banner" class="reminder-banner" hidden></div>
+      <nav class="mobile-jump" aria-label="Quick jump">
+        <a href="#priority-section">Today's Priority</a>
+        <a href="#today-section">Today's IELTS</a>
+        <a href="#tracking-section">Today's Law</a>
+      </nav>
 
       <main class="grid">
-        <section class="panel panel-progress">
+        <section class="panel panel-progress" id="progress-section">
           <div class="panel-header">
             <div>
               <p class="panel-kicker">At A Glance</p>
@@ -42,7 +47,17 @@
           <div id="progress-overview"></div>
         </section>
 
-        <section class="panel panel-today">
+        <section class="panel panel-priority" id="priority-section">
+          <div class="panel-header">
+            <div>
+              <p class="panel-kicker">Focus First</p>
+              <h2>Weak Area &amp; Priority</h2>
+            </div>
+          </div>
+          <div id="priority-overview"></div>
+        </section>
+
+        <section class="panel panel-today" id="today-section">
           <div class="panel-header">
             <div>
               <p class="panel-kicker">Highest Priority</p>
@@ -55,7 +70,7 @@
           <div id="today-dashboard"></div>
         </section>
 
-        <section class="panel">
+        <section class="panel" id="tracking-section">
           <div class="panel-header">
             <div>
               <p class="panel-kicker">Daily Input</p>
@@ -65,7 +80,7 @@
           <form id="tracking-form" class="stack"></form>
         </section>
 
-        <section class="panel">
+        <section class="panel" id="review-section">
           <div class="panel-header">
             <div>
               <p class="panel-kicker">Critical Loop</p>

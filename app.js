@@ -1,7 +1,14 @@
 import { createPlanner } from "./lib/planner.js";
 import { createStore } from "./lib/store.js";
-import { buildProgressOverview, buildWeeklySummary } from "./lib/analytics.js";
-import { renderProgressOverview, renderReviewForm, renderTodayDashboard, renderTrackingForm, showDateChip } from "./lib/ui.js";
+import { buildPriorityOverview, buildProgressOverview, buildWeeklySummary } from "./lib/analytics.js";
+import {
+  renderPriorityOverview,
+  renderProgressOverview,
+  renderReviewForm,
+  renderTodayDashboard,
+  renderTrackingForm,
+  showDateChip
+} from "./lib/ui.js";
 import {
   normalizeAppConfig,
   normalizeLawSchedule,
@@ -181,11 +188,22 @@ async function bootstrap() {
       plan,
       currentDate
     });
+    const priority = buildPriorityOverview({
+      store,
+      config,
+      plan,
+      currentDate,
+      overview
+    });
 
     showDateChip(document.getElementById("date-chip"), plan);
     renderProgressOverview({
       container: document.getElementById("progress-overview"),
       overview
+    });
+    renderPriorityOverview({
+      container: document.getElementById("priority-overview"),
+      priority
     });
     renderTodayDashboard({
       container: document.getElementById("today-dashboard"),
