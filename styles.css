@@ -18,8 +18,8 @@
   --accent: #1e5a48;
   --accent-soft: #d8e9de;
   --accent-contrast: #fffaf3;
-  --warning: #925b18;
-  --warning-soft: #f8e5c6;
+  --warning: #4d6f5d;
+  --warning-soft: #d8e9de;
   --danger: #9d3f35;
   --danger-soft: #f2d5d0;
   --chip-bg: #fffaf3;
@@ -31,7 +31,7 @@
   --task-complete-bg: #e3f0e7;
   --task-complete-border: rgba(30, 90, 72, 0.24);
   --feature-surface: linear-gradient(135deg, var(--accent-soft), var(--bg-card-alt));
-  --progress-fill: linear-gradient(90deg, #cfa06a, var(--accent));
+  --progress-fill: linear-gradient(90deg, #cfe8db 0%, #7fae98 55%, #3f6f5d 100%);
   --shadow: 0 18px 40px rgba(81, 63, 36, 0.1);
   --bg: var(--bg-page);
   --panel: var(--bg-card);
@@ -50,8 +50,8 @@ body.theme-dark {
   --accent: #7ea997;
   --accent-soft: #33463f;
   --accent-contrast: #f2eee7;
-  --warning: #d7bb8d;
-  --warning-soft: #433728;
+  --warning: #a9c6b7;
+  --warning-soft: #314039;
   --danger: #d5aca5;
   --danger-soft: #4a322f;
   --chip-bg: #34302b;
@@ -63,7 +63,7 @@ body.theme-dark {
   --task-complete-bg: #304039;
   --task-complete-border: rgba(120, 169, 151, 0.26);
   --feature-surface: #314039;
-  --progress-fill: linear-gradient(90deg, #b08b63, var(--accent));
+  --progress-fill: linear-gradient(90deg, #cfe8db 0%, #7fae98 55%, #3f6f5d 100%);
   --shadow: 0 12px 28px rgba(0, 0, 0, 0.22);
 }
 
@@ -179,7 +179,7 @@ select {
 .reminder-banner {
   margin: -6px 0 18px;
   border-radius: 18px;
-  border: 1px solid rgba(146, 91, 24, 0.18);
+  border: 1px solid var(--border);
   background: var(--warning-soft);
   color: var(--warning);
   padding: 12px 14px;
@@ -502,6 +502,56 @@ h1 {
   color: inherit;
 }
 
+.panel,
+.metric-card,
+.summary-card,
+.progress-box,
+.progress-metric,
+.checkbox-item,
+.task-item,
+.adjustment-item,
+.carry-item,
+.login-card,
+.weekly-placeholder,
+.input-group input,
+.input-group textarea,
+.input-group select {
+  background: var(--light-card-bg);
+  color: var(--light-card-text);
+  border-color: var(--light-card-border);
+}
+
+.panel .eyebrow,
+.panel .panel-kicker,
+.panel .mini-label,
+.panel .muted,
+.panel .mini-note,
+.panel .task-detail,
+.panel .task-meta,
+.panel .empty-state,
+.login-card .login-subtitle,
+.weekly-placeholder {
+  color: var(--light-card-muted);
+}
+
+.hero,
+.hero-title-group,
+.hero-tools,
+.subject-card,
+.hero-chip,
+.pill,
+.theme-control select,
+.reminder-banner {
+  color: var(--text-primary);
+}
+
+.hero .eyebrow,
+.hero .mini-label,
+.subject-card .muted,
+.hero-copy {
+  color: var(--text-secondary);
+}
+
 .task-detail,
 .task-meta,
 .muted,
@@ -619,8 +669,11 @@ body.theme-dark .hero-copy,
 body.theme-dark .subject-card,
 body.theme-dark .hero-chip,
 body.theme-dark .pill,
-body.theme-dark .theme-control select {
+body.theme-dark .theme-control select,
+body.theme-dark .reminder-banner {
+  background: var(--dark-card-bg);
   color: var(--dark-card-text);
+  border-color: var(--dark-card-border);
 }
 
 body.theme-dark .hero .eyebrow,
@@ -628,6 +681,10 @@ body.theme-dark .hero .mini-label,
 body.theme-dark .subject-card .muted,
 body.theme-dark .hero-copy {
   color: var(--dark-card-muted);
+}
+
+body.theme-dark .reminder-banner {
+  color: var(--warning);
 }
 
 .input-group input::placeholder,
