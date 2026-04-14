@@ -1,24 +1,26 @@
 :root {
   --bg-page: #f6efe4;
-  --bg-card: rgba(255, 252, 247, 0.92);
-  --bg-card-alt: rgba(255, 249, 242, 0.82);
+  --bg-card: #fffaf3;
+  --bg-card-alt: #fbf3e9;
   --text-primary: #1d1b18;
   --text-secondary: #655d54;
   --border-soft: rgba(29, 27, 24, 0.1);
   --accent: #1e5a48;
-  --accent-soft: rgba(205, 231, 214, 0.88);
+  --accent-soft: #d8e9de;
   --warning: #925b18;
   --warning-soft: #f8e5c6;
   --danger: #9d3f35;
   --danger-soft: #f2d5d0;
-  --chip-bg: rgba(255, 252, 247, 0.9);
+  --chip-bg: #fffaf3;
   --chip-text: #1d1b18;
   --progress-track: rgba(29, 27, 24, 0.08);
-  --input-bg: rgba(255, 255, 255, 0.82);
+  --input-bg: #fffdf9;
   --input-placeholder: #8b7f74;
-  --surface-hover: rgba(255, 255, 255, 0.9);
-  --task-complete-bg: rgba(205, 231, 214, 0.55);
+  --surface-hover: #fffdf9;
+  --task-complete-bg: #e3f0e7;
   --task-complete-border: rgba(30, 90, 72, 0.24);
+  --feature-surface: linear-gradient(135deg, var(--accent-soft), var(--bg-card-alt));
+  --progress-fill: linear-gradient(90deg, #cfa06a, var(--accent));
   --shadow: 0 18px 40px rgba(81, 63, 36, 0.1);
   --bg: var(--bg-page);
   --panel: var(--bg-card);
@@ -29,26 +31,28 @@
 
 body.theme-dark {
   --bg-page: #211e1b;
-  --bg-card: rgba(44, 39, 34, 0.94);
-  --bg-card-alt: rgba(52, 46, 41, 0.92);
+  --bg-card: #2b2824;
+  --bg-card-alt: #342e29;
   --text-primary: #f2eee7;
   --text-secondary: #c8c0b5;
   --border-soft: rgba(255, 255, 255, 0.08);
-  --accent: #78a997;
-  --accent-soft: rgba(120, 169, 151, 0.18);
-  --warning: #d5b07a;
-  --warning-soft: rgba(146, 91, 24, 0.18);
-  --danger: #d5a39d;
-  --danger-soft: rgba(157, 63, 53, 0.18);
-  --chip-bg: rgba(53, 47, 42, 0.96);
+  --accent: #7ea997;
+  --accent-soft: #33463f;
+  --warning: #d7bb8d;
+  --warning-soft: #433728;
+  --danger: #d5aca5;
+  --danger-soft: #4a322f;
+  --chip-bg: #34302b;
   --chip-text: #f2eee7;
-  --progress-track: rgba(255, 255, 255, 0.1);
-  --input-bg: rgba(56, 50, 45, 0.96);
-  --input-placeholder: #9b9084;
-  --surface-hover: rgba(61, 55, 50, 0.96);
-  --task-complete-bg: rgba(52, 74, 66, 0.45);
+  --progress-track: #3c3530;
+  --input-bg: #312c27;
+  --input-placeholder: #a89d90;
+  --surface-hover: #38322d;
+  --task-complete-bg: #304039;
   --task-complete-border: rgba(120, 169, 151, 0.26);
-  --shadow: 0 18px 40px rgba(0, 0, 0, 0.24);
+  --feature-surface: #314039;
+  --progress-fill: linear-gradient(90deg, #b08b63, var(--accent));
+  --shadow: 0 12px 28px rgba(0, 0, 0, 0.22);
 }
 
 * {
@@ -64,16 +68,12 @@ body {
   min-height: 100vh;
   font-family: "Avenir Next", "Helvetica Neue", sans-serif;
   color: var(--text);
-  background:
-    radial-gradient(circle at top right, rgba(255, 255, 255, 0.7), transparent 30%),
-    linear-gradient(180deg, #efe4d5 0%, var(--bg) 48%, #f8f3eb 100%);
+  background: linear-gradient(180deg, #efe4d5 0%, var(--bg) 48%, #f8f3eb 100%);
   transition: background-color 160ms ease, color 160ms ease, border-color 160ms ease;
 }
 
 body.theme-dark {
-  background:
-    radial-gradient(circle at top right, rgba(255, 255, 255, 0.04), transparent 24%),
-    linear-gradient(180deg, #27231f 0%, var(--bg) 52%, #1b1815 100%);
+  background: var(--bg-page);
 }
 
 [hidden] {
@@ -290,7 +290,7 @@ h1 {
 }
 
 .ghost-button {
-  background: rgba(30, 90, 72, 0.08);
+  background: var(--accent-soft);
   color: var(--accent);
 }
 
@@ -336,7 +336,7 @@ h1 {
 }
 
 .subject-card {
-  background: linear-gradient(135deg, var(--accent-soft), var(--bg-card-alt));
+  background: var(--feature-surface);
 }
 
 .progress-track {
@@ -350,7 +350,7 @@ h1 {
 .progress-fill {
   height: 100%;
   border-radius: 999px;
-  background: linear-gradient(90deg, #cfa06a, var(--accent));
+  background: var(--progress-fill);
 }
 
 .task-list,
@@ -434,7 +434,7 @@ h1 {
 }
 
 .task-item:focus-visible {
-  outline: 2px solid rgba(30, 90, 72, 0.35);
+  outline: 2px solid rgba(126, 169, 151, 0.35);
   outline-offset: 2px;
 }
 
@@ -536,7 +536,7 @@ h1 {
 .input-group textarea:focus,
 .input-group select:focus,
 .theme-control select:focus {
-  outline: 2px solid rgba(30, 90, 72, 0.22);
+  outline: 2px solid rgba(126, 169, 151, 0.28);
   outline-offset: 2px;
 }
 
@@ -595,8 +595,8 @@ textarea {
   min-height: 140px;
   text-align: center;
   border-radius: 20px;
-  border: 1px dashed rgba(29, 27, 24, 0.16);
-  background: rgba(255, 255, 255, 0.45);
+  border: 1px dashed var(--border);
+  background: var(--bg-card-alt);
   color: var(--muted);
   padding: 18px;
 }
@@ -666,7 +666,7 @@ textarea {
     text-align: center;
     text-decoration: none;
     color: var(--accent);
-    background: rgba(255, 252, 247, 0.94);
+    background: var(--chip-bg);
     border: 1px solid var(--border);
     border-radius: 999px;
     padding: 10px 8px;
