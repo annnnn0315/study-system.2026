@@ -72,7 +72,17 @@
           <p class="eyebrow">Personal Study System</p>
           <h1>Know exactly what to do today.</h1>
         </div>
-        <div class="hero-chip" id="date-chip"></div>
+        <div class="hero-tools">
+          <label class="theme-control" for="theme-mode">
+            <span class="mini-label">Theme</span>
+            <select id="theme-mode" aria-label="Theme mode">
+              <option value="auto">Auto</option>
+              <option value="light">Light</option>
+              <option value="dark">Dark</option>
+            </select>
+          </label>
+          <div class="hero-chip" id="date-chip"></div>
+        </div>
         <p class="hero-copy">
           IELTS in the morning, law in the afternoon, and daily adjustments
           that stay small and clear.
@@ -143,14 +153,14 @@
     </div>
 
     <template id="task-item-template">
-      <label class="task-item">
+      <div class="task-item" role="button" tabindex="0">
         <input type="checkbox" class="task-checkbox" />
         <span class="task-copy">
           <strong class="task-title"></strong>
           <span class="task-detail"></span>
           <span class="task-meta"></span>
         </span>
-      </label>
+      </div>
     </template>
 
     <script type="module" src="./app.js"></script>

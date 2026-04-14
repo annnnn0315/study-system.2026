@@ -17,6 +17,7 @@ import {
 
 const NOTIFICATION_PREF_KEY = "study-system-notifications-requested-v1";
 const NOTIFICATION_STATE_KEY = "study-system-notification-state-v1";
+const THEME_MODE_KEY = "study-system-theme-mode-v1";
 const REMINDERS = [
   { key: "law", hour: 9, minute: 0, title: "Law session", body: "Start your law study block" },
   { key: "ielts", hour: 14, minute: 0, title: "IELTS session", body: "Start your IELTS tasks for today" },
@@ -25,6 +26,153 @@ const REMINDERS = [
 
 let reminderIntervalId = null;
 let activeReminderBannerTimeout = null;
+let themeIntervalId = null;
+
+function readThemeMode() {
+  const stored = window.localStorage.getItem(THEME_MODE_KEY);
+  if (stored === "light" || stored === "dark" || stored === "auto") {
+    return stored;
+  }
+  return "auto";
+}
+
+function getDayOfYear(date) {
+  const start = new Date(date.getFullYear(), 0, 0);
+  const diff = date - start;
+  return Math.floor(diff / 86400000);
+}
+
+function calculateSunset(date, latitude, longitude) {
+  const dayOfYear = getDayOfYear(date);
+  const lngHour = longitude / 15;
+  const approxTime = dayOfYear + ((18 - lngHour) / 24);
+  const meanAnomaly = (0.9856 * approxTime) - 3.289;
+  const trueLongitude =
+    (meanAnomaly +
+      (1.916 * Math.sin((meanAnomaly * Math.PI) / 180)) +
+      (0.02 * Math.sin((2 * meanAnomaly * Math.PI) / 180)) +
+      282.634 +
+      360) %
+    360;
+  const rightAscensionRaw = (Math.atan(0.91764 * Math.tan((trueLongitude * Math.PI) / 180)) * 180) / Math.PI;
+  const rightAscension =
+    ((rightAscensionRaw + 360) % 360 +
+      (Math.floor(trueLongitude / 90) * 90 - Math.floor(((rightAscensionRaw + 360) % 360) / 90) * 90)) /
+    15;
+  const sinDeclination = 0.39782 * Math.sin((trueLongitude * Math.PI) / 180);
+  const cosDeclination = Math.cos(Math.asin(sinDeclination));
+  const cosHourAngle =
+    (Math.cos((90.833 * Math.PI) / 180) -
+      sinDeclination * Math.sin((latitude * Math.PI) / 180)) /
+    (cosDeclination * Math.cos((latitude * Math.PI) / 180));
+
+  if (cosHourAngle < -1 || cosHourAngle > 1) {
+    return null;
+  }
+
+  const hourAngle = (Math.acos(cosHourAngle) * 180) / Math.PI / 15;
+  const localMeanTime = hourAngle + rightAscension - (0.06571 * approxTime) - 6.622;
+  const universalTime = (localMeanTime - lngHour + 24) % 24;
+  const utcMidnight = Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0);
+  return new Date(utcMidnight + universalTime * 60 * 60 * 1000);
+}
+
+function getFallbackDarkMode(now) {
+  const minutes = now.getHours() * 60 + now.getMinutes();
+  return minutes >= 18 * 60 + 30 || minutes < 6 * 60 + 30;
+}
+
+function applyTheme(mode, isDark) {
+  document.body.classList.toggle("theme-dark", isDark);
+  const select = document.getElementById("theme-mode");
+  if (select && select.value !== mode) {
+    select.value = mode;
+  }
+}
+
+function evaluateAutoTheme(coords) {
+  const now = new Date();
+  if (coords) {
+    const sunset = calculateSunset(now, coords.latitude, coords.longitude);
+    if (sunset) {
+      return now >= sunset;
+    }
+  }
+  return getFallbackDarkMode(now);
+}
+
+function updateTheme(coords) {
+  const mode = readThemeMode();
+  const isDark = mode === "dark" ? true : mode === "light" ? false : evaluateAutoTheme(coords);
+  applyTheme(mode, isDark);
+}
+
+function startThemeWatcher(coords) {
+  if (themeIntervalId) {
+    window.clearInterval(themeIntervalId);
+  }
+  updateTheme(coords);
+  themeIntervalId = window.setInterval(() => updateTheme(coords), 5 * 60 * 1000);
+}
+
+function getStoredCoords() {
+  try {
+    const raw = window.localStorage.getItem("study-system-geo-v1");
+    return raw ? JSON.parse(raw) : null;
+  } catch (_error) {
+    return null;
+  }
+}
+
+function storeCoords(coords) {
+  window.localStorage.setItem("study-system-geo-v1", JSON.stringify(coords));
+}
+
+function initializeThemeControl() {
+  const select = document.getElementById("theme-mode");
+  if (!select) {
+    return;
+  }
+  select.value = readThemeMode();
+  select.addEventListener("change", () => {
+    window.localStorage.setItem(THEME_MODE_KEY, select.value);
+    initializeTheme();
+  });
+}
+
+function initializeTheme() {
+  const storedCoords = getStoredCoords();
+  startThemeWatcher(storedCoords);
+
+  if (!("geolocation" in navigator) || !navigator.permissions) {
+    return;
+  }
+
+  navigator.permissions
+    .query({ name: "geolocation" })
+    .then((result) => {
+      if (result.state !== "granted") {
+        return;
+      }
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const coords = {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude
+          };
+          storeCoords(coords);
+          startThemeWatcher(coords);
+        },
+        () => {
+          startThemeWatcher(storedCoords);
+        },
+        { maximumAge: 6 * 60 * 60 * 1000, timeout: 5000 }
+      );
+    })
+    .catch(() => {
+      startThemeWatcher(storedCoords);
+    });
+}
 
 function localDateKey(date = new Date()) {
   const year = date.getFullYear();
@@ -341,6 +489,8 @@ async function bootstrap() {
   });
 
   refresh();
+  initializeThemeControl();
+  initializeTheme();
   initializeNotifications(planner);
 }
 

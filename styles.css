@@ -1,17 +1,54 @@
 :root {
-  --bg: #f6efe4;
-  --bg-strong: #eadfce;
-  --panel: rgba(255, 252, 247, 0.92);
-  --text: #1d1b18;
-  --muted: #655d54;
+  --bg-page: #f6efe4;
+  --bg-card: rgba(255, 252, 247, 0.92);
+  --bg-card-alt: rgba(255, 249, 242, 0.82);
+  --text-primary: #1d1b18;
+  --text-secondary: #655d54;
+  --border-soft: rgba(29, 27, 24, 0.1);
   --accent: #1e5a48;
-  --accent-soft: #cde7d6;
+  --accent-soft: rgba(205, 231, 214, 0.88);
   --warning: #925b18;
   --warning-soft: #f8e5c6;
   --danger: #9d3f35;
   --danger-soft: #f2d5d0;
-  --border: rgba(29, 27, 24, 0.1);
+  --chip-bg: rgba(255, 252, 247, 0.9);
+  --chip-text: #1d1b18;
+  --progress-track: rgba(29, 27, 24, 0.08);
+  --input-bg: rgba(255, 255, 255, 0.82);
+  --input-placeholder: #8b7f74;
+  --surface-hover: rgba(255, 255, 255, 0.9);
+  --task-complete-bg: rgba(205, 231, 214, 0.55);
+  --task-complete-border: rgba(30, 90, 72, 0.24);
   --shadow: 0 18px 40px rgba(81, 63, 36, 0.1);
+  --bg: var(--bg-page);
+  --panel: var(--bg-card);
+  --text: var(--text-primary);
+  --muted: var(--text-secondary);
+  --border: var(--border-soft);
+}
+
+body.theme-dark {
+  --bg-page: #211e1b;
+  --bg-card: rgba(44, 39, 34, 0.94);
+  --bg-card-alt: rgba(52, 46, 41, 0.92);
+  --text-primary: #f2eee7;
+  --text-secondary: #c8c0b5;
+  --border-soft: rgba(255, 255, 255, 0.08);
+  --accent: #78a997;
+  --accent-soft: rgba(120, 169, 151, 0.18);
+  --warning: #d5b07a;
+  --warning-soft: rgba(146, 91, 24, 0.18);
+  --danger: #d5a39d;
+  --danger-soft: rgba(157, 63, 53, 0.18);
+  --chip-bg: rgba(53, 47, 42, 0.96);
+  --chip-text: #f2eee7;
+  --progress-track: rgba(255, 255, 255, 0.1);
+  --input-bg: rgba(56, 50, 45, 0.96);
+  --input-placeholder: #9b9084;
+  --surface-hover: rgba(61, 55, 50, 0.96);
+  --task-complete-bg: rgba(52, 74, 66, 0.45);
+  --task-complete-border: rgba(120, 169, 151, 0.26);
+  --shadow: 0 18px 40px rgba(0, 0, 0, 0.24);
 }
 
 * {
@@ -30,6 +67,13 @@ body {
   background:
     radial-gradient(circle at top right, rgba(255, 255, 255, 0.7), transparent 30%),
     linear-gradient(180deg, #efe4d5 0%, var(--bg) 48%, #f8f3eb 100%);
+  transition: background-color 160ms ease, color 160ms ease, border-color 160ms ease;
+}
+
+body.theme-dark {
+  background:
+    radial-gradient(circle at top right, rgba(255, 255, 255, 0.04), transparent 24%),
+    linear-gradient(180deg, #27231f 0%, var(--bg) 52%, #1b1815 100%);
 }
 
 [hidden] {
@@ -92,6 +136,28 @@ select {
   margin-bottom: 28px;
 }
 
+.hero-tools {
+  display: grid;
+  gap: 10px;
+  justify-items: end;
+}
+
+.theme-control {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.theme-control select {
+  min-height: 40px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--chip-bg);
+  color: var(--text);
+  padding: 8px 36px 8px 12px;
+  box-shadow: var(--shadow);
+}
+
 .reminder-banner {
   margin: -6px 0 18px;
   border-radius: 18px;
@@ -146,6 +212,7 @@ h1 {
   border: 1px solid var(--border);
   background: var(--panel);
   box-shadow: var(--shadow);
+  transition: background-color 160ms ease, color 160ms ease, border-color 160ms ease;
 }
 
 .hero-chip {
@@ -153,6 +220,8 @@ h1 {
   padding: 14px 18px;
   white-space: nowrap;
   font-weight: 600;
+  background: var(--chip-bg);
+  color: var(--chip-text);
 }
 
 .grid {
@@ -263,21 +332,21 @@ h1 {
 }
 
 .subject-card {
-  background: linear-gradient(135deg, rgba(30, 90, 72, 0.08), rgba(255, 252, 247, 0.98));
+  background: linear-gradient(135deg, var(--accent-soft), var(--bg-card-alt));
 }
 
 .progress-track {
   height: 10px;
   border-radius: 999px;
   overflow: hidden;
-  background: rgba(29, 27, 24, 0.08);
+  background: var(--progress-track);
   margin-top: 10px;
 }
 
 .progress-fill {
   height: 100%;
   border-radius: 999px;
-  background: linear-gradient(90deg, #dca75f, var(--accent));
+  background: linear-gradient(90deg, #cfa06a, var(--accent));
 }
 
 .task-list,
@@ -302,7 +371,7 @@ h1 {
   border-radius: 16px;
   border: 1px solid var(--border);
   padding: 12px;
-  background: rgba(255, 255, 255, 0.65);
+  background: var(--bg-card-alt);
 }
 
 .progress-block {
@@ -322,7 +391,7 @@ h1 {
   border-radius: 14px;
   border: 1px solid var(--border);
   padding: 10px 12px;
-  background: rgba(255, 255, 255, 0.65);
+  background: var(--bg-card-alt);
   min-width: 0;
 }
 
@@ -348,11 +417,40 @@ h1 {
   border-radius: 18px;
   border: 1px solid var(--border);
   padding: 12px 14px;
-  background: rgba(255, 255, 255, 0.7);
+  background: var(--bg-card-alt);
+}
+
+.task-item {
+  cursor: pointer;
+  transition: background 120ms ease, border-color 120ms ease, opacity 120ms ease, transform 120ms ease;
+}
+
+.task-item:hover {
+  background: var(--surface-hover);
+}
+
+.task-item:focus-visible {
+  outline: 2px solid rgba(30, 90, 72, 0.35);
+  outline-offset: 2px;
 }
 
 .task-item input {
   margin-top: 3px;
+}
+
+.task-item--completed {
+  background: var(--task-complete-bg);
+  border-color: var(--task-complete-border);
+}
+
+.task-item--completed .task-copy {
+  opacity: 0.72;
+}
+
+.task-item--completed .task-title,
+.task-item--completed .task-detail {
+  text-decoration: line-through;
+  text-decoration-thickness: 1.5px;
 }
 
 .task-copy {
@@ -411,8 +509,23 @@ h1 {
   border-radius: 14px;
   border: 1px solid var(--border);
   padding: 12px 13px;
-  background: rgba(255, 255, 255, 0.8);
+  background: var(--input-bg);
+  color: var(--text);
   min-height: 48px;
+  transition: background-color 160ms ease, color 160ms ease, border-color 160ms ease;
+}
+
+.input-group input::placeholder,
+.input-group textarea::placeholder {
+  color: var(--input-placeholder);
+}
+
+.input-group input:focus,
+.input-group textarea:focus,
+.input-group select:focus,
+.theme-control select:focus {
+  outline: 2px solid rgba(30, 90, 72, 0.22);
+  outline-offset: 2px;
 }
 
 textarea {
@@ -431,6 +544,8 @@ textarea {
   border-radius: 999px;
   padding: 8px 11px;
   font-size: 0.86rem;
+  background: var(--chip-bg);
+  color: var(--chip-text);
 }
 
 .pill.warning {
@@ -666,11 +781,26 @@ textarea {
     justify-self: end;
     white-space: nowrap;
   }
+
+  .hero-tools {
+    grid-area: badge;
+  }
 }
 
 @media (min-width: 1024px) {
   .hero-copy {
     white-space: nowrap;
     max-width: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .hero-tools {
+    width: 100%;
+    justify-items: stretch;
+  }
+
+  .theme-control select {
+    width: 100%;
   }
 }
