@@ -9,14 +9,64 @@
   <body>
     <script>
       (function () {
-        const password = window.prompt("Enter password:");
-        if (password !== "study2026") {
-          document.body.innerHTML = "Access Denied";
-          throw new Error("Access denied");
+        const AUTH_KEY = "study-system-authenticated-v1";
+
+        function setAppVisibility(isAuthenticated) {
+          const appShell = document.getElementById("app-shell");
+          const loginGate = document.getElementById("login-gate");
+          if (appShell) {
+            appShell.hidden = !isAuthenticated;
+          }
+          if (loginGate) {
+            loginGate.hidden = isAuthenticated;
+          }
         }
+
+        function initLogin() {
+          const isAuthenticated = window.sessionStorage.getItem(AUTH_KEY) === "true";
+          setAppVisibility(isAuthenticated);
+
+          const form = document.getElementById("login-form");
+          const input = document.getElementById("login-password");
+          const error = document.getElementById("login-error");
+
+          if (isAuthenticated || !form || !input || !error) {
+            return;
+          }
+
+          form.addEventListener("submit", function (event) {
+            event.preventDefault();
+            if (input.value === "study2026") {
+              window.sessionStorage.setItem(AUTH_KEY, "true");
+              error.textContent = "";
+              input.value = "";
+              setAppVisibility(true);
+              return;
+            }
+            error.textContent = "Incorrect password";
+          });
+        }
+
+        window.addEventListener("DOMContentLoaded", initLogin);
       })();
     </script>
-    <div class="app-shell">
+    <div class="login-gate" id="login-gate" hidden>
+      <section class="login-card">
+        <p class="eyebrow">Study System</p>
+        <h1 class="login-title">Study System</h1>
+        <p class="login-subtitle">Sign in to view today’s plan, progress, and review tools.</p>
+        <form id="login-form" class="stack">
+          <div class="input-group">
+            <label for="login-password">Password</label>
+            <input id="login-password" name="password" type="password" autocomplete="current-password" />
+          </div>
+          <button class="primary-button" type="submit">Enter</button>
+          <p id="login-error" class="login-error" aria-live="polite"></p>
+        </form>
+      </section>
+    </div>
+
+    <div class="app-shell" id="app-shell" hidden>
       <header class="hero">
         <div class="hero-title-group">
           <p class="eyebrow">Personal Study System</p>
