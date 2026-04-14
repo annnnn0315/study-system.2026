@@ -18,6 +18,7 @@ import {
 const NOTIFICATION_PREF_KEY = "study-system-notifications-requested-v1";
 const NOTIFICATION_STATE_KEY = "study-system-notification-state-v1";
 const THEME_MODE_KEY = "study-system-theme-mode-v1";
+const AUTH_KEY = "study-system-authenticated-v3";
 const REMINDERS = [
   { key: "law", hour: 9, minute: 0, title: "Law session", body: "Start your law study block" },
   { key: "ielts", hour: 14, minute: 0, title: "IELTS session", body: "Start your IELTS tasks for today" },
@@ -27,6 +28,12 @@ const REMINDERS = [
 let reminderIntervalId = null;
 let activeReminderBannerTimeout = null;
 let themeIntervalId = null;
+let activeThemeCoords = null;
+let appStarted = false;
+
+function isAuthenticated() {
+  return window.sessionStorage.getItem(AUTH_KEY) === "true";
+}
 
 function readThemeMode() {
   const stored = window.localStorage.getItem(THEME_MODE_KEY);
@@ -84,6 +91,8 @@ function getFallbackDarkMode(now) {
 
 function applyTheme(mode, isDark) {
   document.body.classList.toggle("theme-dark", isDark);
+  document.body.dataset.themeMode = mode;
+  document.documentElement.style.colorScheme = isDark ? "dark" : "light";
   const select = document.getElementById("theme-mode");
   if (select && select.value !== mode) {
     select.value = mode;
@@ -102,8 +111,9 @@ function evaluateAutoTheme(coords) {
 }
 
 function updateTheme(coords) {
+  activeThemeCoords = coords ?? activeThemeCoords ?? getStoredCoords();
   const mode = readThemeMode();
-  const isDark = mode === "dark" ? true : mode === "light" ? false : evaluateAutoTheme(coords);
+  const isDark = mode === "dark" ? true : mode === "light" ? false : evaluateAutoTheme(activeThemeCoords);
   applyTheme(mode, isDark);
 }
 
@@ -111,8 +121,9 @@ function startThemeWatcher(coords) {
   if (themeIntervalId) {
     window.clearInterval(themeIntervalId);
   }
-  updateTheme(coords);
-  themeIntervalId = window.setInterval(() => updateTheme(coords), 5 * 60 * 1000);
+  activeThemeCoords = coords ?? activeThemeCoords ?? getStoredCoords();
+  updateTheme(activeThemeCoords);
+  themeIntervalId = window.setInterval(() => updateTheme(activeThemeCoords), 5 * 60 * 1000);
 }
 
 function getStoredCoords() {
@@ -136,7 +147,7 @@ function initializeThemeControl() {
   select.value = readThemeMode();
   select.addEventListener("change", () => {
     window.localStorage.setItem(THEME_MODE_KEY, select.value);
-    initializeTheme();
+    updateTheme(activeThemeCoords ?? getStoredCoords());
   });
 }
 
@@ -161,6 +172,7 @@ function initializeTheme() {
             longitude: position.coords.longitude
           };
           storeCoords(coords);
+          activeThemeCoords = coords;
           startThemeWatcher(coords);
         },
         () => {
@@ -407,6 +419,10 @@ function formatTimeLabel(isoString) {
 }
 
 async function bootstrap() {
+  if (appStarted) {
+    return;
+  }
+  appStarted = true;
   const config = await loadConfig();
   const store = createStore();
   const planner = createPlanner(config, store);
@@ -494,6 +510,23 @@ async function bootstrap() {
   initializeNotifications(planner);
 }
 
-bootstrap().catch((error) => {
+function handleBootstrapError(error) {
   document.body.innerHTML = `<main class="app-shell"><section class="panel"><h2>App failed to load</h2><p class="muted">${error.message}</p></section></main>`;
-});
+}
+
+function initializeAppGate() {
+  if (isAuthenticated()) {
+    bootstrap().catch(handleBootstrapError);
+    return;
+  }
+
+  window.addEventListener(
+    "study-system:authenticated",
+    () => {
+      bootstrap().catch(handleBootstrapError);
+    },
+    { once: true }
+  );
+}
+
+initializeAppGate();

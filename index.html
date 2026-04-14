@@ -9,11 +9,12 @@
   <body>
     <script>
       (function () {
-        const AUTH_KEY = "study-system-authenticated-v2";
+        const AUTH_KEY = "study-system-authenticated-v3";
 
         function setAppVisibility(isAuthenticated) {
           const appShell = document.getElementById("app-shell");
           const loginGate = document.getElementById("login-gate");
+          document.body.dataset.auth = isAuthenticated ? "authenticated" : "locked";
           if (appShell) {
             appShell.hidden = !isAuthenticated;
           }
@@ -41,6 +42,11 @@
               error.textContent = "";
               input.value = "";
               setAppVisibility(true);
+              window.dispatchEvent(
+                new CustomEvent("study-system:authenticated", {
+                  detail: { authenticated: true }
+                })
+              );
               return;
             }
             error.textContent = "Incorrect password";
