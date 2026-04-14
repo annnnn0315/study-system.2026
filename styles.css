@@ -1,10 +1,20 @@
 :root {
+  --light-card-bg: #fffaf3;
+  --light-card-alt: #fbf3e9;
+  --light-card-text: #1d1b18;
+  --light-card-muted: #655d54;
+  --light-card-border: rgba(29, 27, 24, 0.1);
+  --dark-card-bg: #2b2824;
+  --dark-card-alt: #342e29;
+  --dark-card-text: #f2eee7;
+  --dark-card-muted: #c8c0b5;
+  --dark-card-border: rgba(255, 255, 255, 0.08);
   --bg-page: #f6efe4;
-  --bg-card: #fffaf3;
-  --bg-card-alt: #fbf3e9;
-  --text-primary: #1d1b18;
-  --text-secondary: #655d54;
-  --border-soft: rgba(29, 27, 24, 0.1);
+  --bg-card: var(--light-card-bg);
+  --bg-card-alt: var(--light-card-alt);
+  --text-primary: var(--light-card-text);
+  --text-secondary: var(--light-card-muted);
+  --border-soft: var(--light-card-border);
   --accent: #1e5a48;
   --accent-soft: #d8e9de;
   --accent-contrast: #fffaf3;
@@ -32,11 +42,11 @@
 
 body.theme-dark {
   --bg-page: #211e1b;
-  --bg-card: #2b2824;
-  --bg-card-alt: #342e29;
-  --text-primary: #f2eee7;
-  --text-secondary: #c8c0b5;
-  --border-soft: rgba(255, 255, 255, 0.08);
+  --bg-card: var(--dark-card-bg);
+  --bg-card-alt: var(--dark-card-alt);
+  --text-primary: var(--dark-card-text);
+  --text-secondary: var(--dark-card-muted);
+  --border-soft: var(--dark-card-border);
   --accent: #7ea997;
   --accent-soft: #33463f;
   --accent-contrast: #f2eee7;
@@ -489,7 +499,7 @@ h1 {
 .checkbox-item span,
 .progress-metric strong,
 .progress-metric span {
-  color: var(--text-primary);
+  color: inherit;
 }
 
 .task-detail,
@@ -554,6 +564,70 @@ h1 {
   color: var(--text-primary);
   min-height: 48px;
   transition: background-color 160ms ease, color 160ms ease, border-color 160ms ease;
+}
+
+body.theme-dark .panel,
+body.theme-dark .metric-card,
+body.theme-dark .summary-card,
+body.theme-dark .progress-box,
+body.theme-dark .progress-metric,
+body.theme-dark .checkbox-item,
+body.theme-dark .task-item,
+body.theme-dark .adjustment-item,
+body.theme-dark .carry-item,
+body.theme-dark .login-card,
+body.theme-dark .weekly-placeholder,
+body.theme-dark .input-group input,
+body.theme-dark .input-group textarea,
+body.theme-dark .input-group select {
+  background: var(--light-card-bg);
+  color: var(--light-card-text);
+  border-color: var(--light-card-border);
+}
+
+body.theme-dark .panel .eyebrow,
+body.theme-dark .panel .panel-kicker,
+body.theme-dark .panel .mini-label,
+body.theme-dark .panel .muted,
+body.theme-dark .panel .mini-note,
+body.theme-dark .panel .task-detail,
+body.theme-dark .panel .task-meta,
+body.theme-dark .panel .empty-state,
+body.theme-dark .panel .hero-copy,
+body.theme-dark .login-card .login-subtitle,
+body.theme-dark .login-card .muted,
+body.theme-dark .weekly-placeholder {
+  color: var(--light-card-muted);
+}
+
+body.theme-dark .panel .warning,
+body.theme-dark .panel .pill.warning,
+body.theme-dark .reminder-banner {
+  color: var(--warning);
+}
+
+body.theme-dark .panel .danger,
+body.theme-dark .panel .pill.danger,
+body.theme-dark .login-error {
+  color: var(--danger);
+}
+
+body.theme-dark .hero,
+body.theme-dark .hero-title-group,
+body.theme-dark .hero-tools,
+body.theme-dark .hero-copy,
+body.theme-dark .subject-card,
+body.theme-dark .hero-chip,
+body.theme-dark .pill,
+body.theme-dark .theme-control select {
+  color: var(--dark-card-text);
+}
+
+body.theme-dark .hero .eyebrow,
+body.theme-dark .hero .mini-label,
+body.theme-dark .subject-card .muted,
+body.theme-dark .hero-copy {
+  color: var(--dark-card-muted);
 }
 
 .input-group input::placeholder,
