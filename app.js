@@ -16,14 +16,22 @@ import {
 } from "./lib/config-adapters.js";
 
 const NOTIFICATION_PREF_KEY = "study-system-notifications-requested-v1";
+const NOTIFICATION_STATE_KEY = "study-system-notification-state-v1";
 const REMINDERS = [
-  { hour: 9, minute: 0, title: "IELTS session", body: "Time for your IELTS session." },
-  { hour: 13, minute: 0, title: "Law study", body: "Time for your law study block." },
-  { hour: 23, minute: 59, title: "Evening review", body: "Wrap up the day with your evening review." }
+  { key: "law", hour: 9, minute: 0, title: "Law session", body: "Start your law study block" },
+  { key: "ielts", hour: 14, minute: 0, title: "IELTS session", body: "Start your IELTS tasks for today" },
+  { key: "review", hour: 23, minute: 50, title: "Evening review", body: "Complete your daily review" }
 ];
 
-let reminderTimeouts = [];
-let reminderRolloverTimeout = null;
+let reminderIntervalId = null;
+let activeReminderBannerTimeout = null;
+
+function localDateKey(date = new Date()) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
 
 function setReminderBanner(message = "") {
   const element = document.getElementById("reminder-banner");
@@ -39,29 +47,42 @@ function setReminderBanner(message = "") {
   element.textContent = message;
 }
 
-function clearReminderTimers() {
-  reminderTimeouts.forEach((timeoutId) => window.clearTimeout(timeoutId));
-  reminderTimeouts = [];
-  if (reminderRolloverTimeout) {
-    window.clearTimeout(reminderRolloverTimeout);
-    reminderRolloverTimeout = null;
+function truncateReminderText(text, maxLength = 90) {
+  const value = String(text ?? "").trim();
+  if (value.length <= maxLength) {
+    return value;
+  }
+  return `${value.slice(0, maxLength - 1).trimEnd()}…`;
+}
+
+function showTriggeredReminderBanner(title, body) {
+  const suffix = body ? ` — ${body}` : "";
+  setReminderBanner(`Now: ${title}${suffix}`);
+  if (activeReminderBannerTimeout) {
+    window.clearTimeout(activeReminderBannerTimeout);
+  }
+  activeReminderBannerTimeout = window.setTimeout(() => {
+    if (Notification.permission === "denied") {
+      setReminderBanner("Notifications are blocked in this browser. Keep the dashboard open and use the in-page reminders instead.");
+    } else if (!("Notification" in window)) {
+      setReminderBanner("Browser notifications are not supported here. Morning, afternoon, and evening reminders will need to be checked inside the page.");
+    } else {
+      setReminderBanner("");
+    }
+  }, 5 * 60 * 1000);
+}
+
+function readNotificationState() {
+  try {
+    const raw = window.localStorage.getItem(NOTIFICATION_STATE_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch (_error) {
+    return {};
   }
 }
 
-function nextDelay(hour, minute) {
-  const now = new Date();
-  const target = new Date();
-  target.setHours(hour, minute, 0, 0);
-  const delay = target.getTime() - now.getTime();
-  return delay > 0 ? delay : null;
-}
-
-function delayUntilTomorrow() {
-  const now = new Date();
-  const tomorrow = new Date();
-  tomorrow.setDate(now.getDate() + 1);
-  tomorrow.setHours(0, 0, 5, 0);
-  return tomorrow.getTime() - now.getTime();
+function writeNotificationState(state) {
+  window.localStorage.setItem(NOTIFICATION_STATE_KEY, JSON.stringify(state));
 }
 
 function sendReminderNotification(title, body) {
@@ -73,42 +94,100 @@ function sendReminderNotification(title, body) {
   }
 }
 
-function scheduleReminderTimers() {
-  clearReminderTimers();
-  if (!("Notification" in window) || Notification.permission !== "granted") {
-    return;
-  }
+function buildReminderContent(planner, dateString) {
+  const plan = planner.ensureDay(dateString);
+  const plannedIeltsTasks = plan.plannedIeltsTasks ?? [];
+  const ieltsTaskText = plannedIeltsTasks.length
+    ? truncateReminderText(plannedIeltsTasks.map((task) => task.title).join(" + "))
+    : "Open dashboard to view today's IELTS tasks";
+  const lawSubjectText = plan.law?.subjects?.length
+    ? truncateReminderText(plan.law.subjects.join(" + "))
+    : "Open dashboard to view today's law tasks";
 
-  REMINDERS.forEach((reminder) => {
-    const delay = nextDelay(reminder.hour, reminder.minute);
-    if (delay === null) {
-      return;
+  return {
+    law: {
+      title: "Law session",
+      body: plan.law?.subjects?.length
+        ? `Today's law focus: ${lawSubjectText}`
+        : "Open dashboard to view today's law tasks"
+    },
+    ielts: {
+      title: "IELTS session",
+      body: plannedIeltsTasks.length
+        ? `Today's IELTS: ${ieltsTaskText}`
+        : "Open dashboard to view today's IELTS tasks"
+    },
+    review: {
+      title: "Evening review",
+      body: "Complete your daily tracking and evening review"
     }
-    const timeoutId = window.setTimeout(() => {
-      sendReminderNotification(reminder.title, reminder.body);
-    }, delay);
-    reminderTimeouts.push(timeoutId);
-  });
-
-  reminderRolloverTimeout = window.setTimeout(() => {
-    scheduleReminderTimers();
-  }, delayUntilTomorrow());
+  };
 }
 
-async function initializeNotifications() {
+function clearReminderChecker() {
+  if (reminderIntervalId) {
+    window.clearInterval(reminderIntervalId);
+    reminderIntervalId = null;
+  }
+}
+
+function getDailyReminderState() {
+  const state = readNotificationState();
+  const today = localDateKey();
+  if (!state[today]) {
+    state[today] = {};
+    writeNotificationState(state);
+  }
+  return { state, today, todayState: state[today] };
+}
+
+function checkReminderSchedule(planner) {
+  const now = new Date();
+  const currentHours = now.getHours();
+  const currentMinutes = now.getMinutes();
+  const today = localDateKey(now);
+  const { state, todayState } = getDailyReminderState();
+  const reminderContent = buildReminderContent(planner, today);
+
+  REMINDERS.forEach((reminder) => {
+    if (todayState[reminder.key]) {
+      return;
+    }
+    if (currentHours === reminder.hour && currentMinutes === reminder.minute) {
+      const content = reminderContent[reminder.key] ?? reminder;
+      todayState[reminder.key] = true;
+      state[today] = todayState;
+      writeNotificationState(state);
+      showTriggeredReminderBanner(content.title, content.body);
+      if ("Notification" in window && Notification.permission === "granted") {
+        sendReminderNotification(content.title, content.body);
+      }
+    }
+  });
+}
+
+function startReminderChecker(planner) {
+  clearReminderChecker();
+  checkReminderSchedule(planner);
+  reminderIntervalId = window.setInterval(() => checkReminderSchedule(planner), 30 * 1000);
+}
+
+async function initializeNotifications(planner) {
   if (!("Notification" in window)) {
     setReminderBanner("Browser notifications are not supported here. Morning, afternoon, and evening reminders will need to be checked inside the page.");
+    startReminderChecker(planner);
     return;
   }
 
   if (Notification.permission === "granted") {
     setReminderBanner("");
-    scheduleReminderTimers();
+    startReminderChecker(planner);
     return;
   }
 
   if (Notification.permission === "denied") {
     setReminderBanner("Notifications are blocked in this browser. Keep the dashboard open and use the in-page reminders instead.");
+    startReminderChecker(planner);
     return;
   }
 
@@ -119,7 +198,7 @@ async function initializeNotifications() {
       const permission = await Notification.requestPermission();
       if (permission === "granted") {
         setReminderBanner("");
-        scheduleReminderTimers();
+        startReminderChecker(planner);
         return;
       }
     } catch (error) {
@@ -128,6 +207,7 @@ async function initializeNotifications() {
   }
 
   setReminderBanner("Enable browser notifications to get reminders for IELTS, law study, and evening review. If blocked, keep this page open as a reminder hub.");
+  startReminderChecker(planner);
 }
 
 async function loadJson(path, fallback) {
@@ -261,7 +341,7 @@ async function bootstrap() {
   });
 
   refresh();
-  initializeNotifications();
+  initializeNotifications(planner);
 }
 
 bootstrap().catch((error) => {
