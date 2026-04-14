@@ -137,19 +137,23 @@ select {
 }
 
 .hero-tools {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 10px;
-  justify-items: end;
+  align-items: flex-end;
 }
 
 .theme-control {
   display: grid;
   gap: 6px;
   min-width: 0;
+  justify-items: end;
 }
 
 .theme-control select {
+  appearance: none;
   min-height: 40px;
+  min-width: 116px;
   border-radius: 999px;
   border: 1px solid var(--border);
   background: var(--chip-bg);
@@ -436,6 +440,14 @@ h1 {
 
 .task-item input {
   margin-top: 3px;
+}
+
+.task-checkbox {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+  cursor: pointer;
+  accent-color: var(--accent);
 }
 
 .task-item--completed {
