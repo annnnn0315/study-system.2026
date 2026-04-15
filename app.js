@@ -30,6 +30,89 @@ let activeReminderBannerTimeout = null;
 let themeIntervalId = null;
 let activeThemeCoords = null;
 let appStarted = false;
+const appRuntime = {
+  planner: null,
+  currentDate: null,
+  refresh: null,
+  isRegeneratingToday: false
+};
+
+function setRegenerateButtonState(disabled) {
+  const button = document.getElementById("reset-today");
+  if (!button) {
+    return;
+  }
+  button.disabled = disabled;
+  button.setAttribute("aria-disabled", String(disabled));
+}
+
+function handleRegenerateTodayClick(event) {
+  console.debug("[study-system] Regenerate Today handler entered", {
+    eventType: event?.type ?? null,
+    date: appRuntime.currentDate,
+    isRegeneratingToday: appRuntime.isRegeneratingToday,
+    hasPlanner: Boolean(appRuntime.planner),
+    hasRefresh: Boolean(appRuntime.refresh)
+  });
+
+  if (event) {
+    event.preventDefault();
+  }
+
+  if (!appRuntime.planner || !appRuntime.currentDate || !appRuntime.refresh) {
+    console.warn("[study-system] Regenerate Today aborted: runtime not ready", {
+      date: appRuntime.currentDate,
+      hasPlanner: Boolean(appRuntime.planner),
+      hasRefresh: Boolean(appRuntime.refresh)
+    });
+    return;
+  }
+
+  if (appRuntime.isRegeneratingToday) {
+    console.warn("[study-system] Regenerate Today aborted: already regenerating");
+    return;
+  }
+
+  appRuntime.isRegeneratingToday = true;
+  setRegenerateButtonState(true);
+
+  try {
+    const regeneratedPlan = appRuntime.planner.resetDay(appRuntime.currentDate);
+    console.debug("[study-system] Regenerate Today rebuilt plan", {
+      date: appRuntime.currentDate,
+      ieltsTasks: regeneratedPlan.ieltsTasks?.length ?? 0,
+      lawTasks: regeneratedPlan.lawTasks?.length ?? 0,
+      carryOverTasks: regeneratedPlan.carryOverTasks?.length ?? 0
+    });
+    appRuntime.refresh();
+  } catch (error) {
+    console.error("[study-system] Regenerate Today failed", error);
+  } finally {
+    appRuntime.isRegeneratingToday = false;
+    setRegenerateButtonState(false);
+    console.debug("[study-system] Regenerate Today finished", {
+      date: appRuntime.currentDate,
+      isRegeneratingToday: appRuntime.isRegeneratingToday,
+      buttonDisabled: document.getElementById("reset-today")?.disabled ?? null
+    });
+  }
+}
+
+function bindResetTodayButton() {
+  const button = document.getElementById("reset-today");
+  if (!button) {
+    console.warn("[study-system] Regenerate Today button not found during bind");
+    return;
+  }
+
+  if (button.dataset.regenerateBound === "true") {
+    return;
+  }
+
+  button.dataset.regenerateBound = "true";
+  button.addEventListener("click", handleRegenerateTodayClick);
+  console.debug("[study-system] Regenerate Today button bound");
+}
 
 function isAuthenticated() {
   return window.sessionStorage.getItem(AUTH_KEY) === "true";
@@ -431,7 +514,6 @@ async function bootstrap() {
     tracking: null,
     review: null
   };
-  let isRegeneratingToday = false;
 
   const refresh = () => {
     const plan = planner.ensureDay(currentDate);
@@ -514,41 +596,12 @@ async function bootstrap() {
     });
 
     document.getElementById("weekly-summary").innerHTML = summary;
+    bindResetTodayButton();
   };
 
-  const resetTodayButton = document.getElementById("reset-today");
-  resetTodayButton.addEventListener("click", () => {
-    console.debug("[study-system] Regenerate Today clicked", {
-      date: currentDate,
-      isRegeneratingToday
-    });
-    if (isRegeneratingToday) {
-      return;
-    }
-
-    isRegeneratingToday = true;
-    resetTodayButton.disabled = true;
-    try {
-      const regeneratedPlan = planner.resetDay(currentDate);
-      console.debug("[study-system] Regenerate Today rebuilt plan", {
-        date: currentDate,
-        ieltsTasks: regeneratedPlan.ieltsTasks?.length ?? 0,
-        lawTasks: regeneratedPlan.lawTasks?.length ?? 0,
-        carryOverTasks: regeneratedPlan.carryOverTasks?.length ?? 0
-      });
-      refresh();
-    } catch (error) {
-      console.error("[study-system] Regenerate Today failed", error);
-    } finally {
-      isRegeneratingToday = false;
-      resetTodayButton.disabled = false;
-      console.debug("[study-system] Regenerate Today finished", {
-        date: currentDate,
-        isRegeneratingToday,
-        buttonDisabled: resetTodayButton.disabled
-      });
-    }
-  });
+  appRuntime.planner = planner;
+  appRuntime.currentDate = currentDate;
+  appRuntime.refresh = refresh;
 
   refresh();
   initializeThemeControl();
