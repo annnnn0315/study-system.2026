@@ -431,6 +431,7 @@ async function bootstrap() {
     tracking: null,
     review: null
   };
+  let isRegeneratingToday = false;
 
   const refresh = () => {
     const plan = planner.ensureDay(currentDate);
@@ -515,9 +516,38 @@ async function bootstrap() {
     document.getElementById("weekly-summary").innerHTML = summary;
   };
 
-  document.getElementById("reset-today").addEventListener("click", () => {
-    planner.ensureDay(currentDate, { forceRefresh: true });
-    refresh();
+  const resetTodayButton = document.getElementById("reset-today");
+  resetTodayButton.addEventListener("click", () => {
+    console.debug("[study-system] Regenerate Today clicked", {
+      date: currentDate,
+      isRegeneratingToday
+    });
+    if (isRegeneratingToday) {
+      return;
+    }
+
+    isRegeneratingToday = true;
+    resetTodayButton.disabled = true;
+    try {
+      const regeneratedPlan = planner.resetDay(currentDate);
+      console.debug("[study-system] Regenerate Today rebuilt plan", {
+        date: currentDate,
+        ieltsTasks: regeneratedPlan.ieltsTasks?.length ?? 0,
+        lawTasks: regeneratedPlan.lawTasks?.length ?? 0,
+        carryOverTasks: regeneratedPlan.carryOverTasks?.length ?? 0
+      });
+      refresh();
+    } catch (error) {
+      console.error("[study-system] Regenerate Today failed", error);
+    } finally {
+      isRegeneratingToday = false;
+      resetTodayButton.disabled = false;
+      console.debug("[study-system] Regenerate Today finished", {
+        date: currentDate,
+        isRegeneratingToday,
+        buttonDisabled: resetTodayButton.disabled
+      });
+    }
   });
 
   refresh();
