@@ -463,6 +463,22 @@ async function bootstrap() {
       container: document.getElementById("today-dashboard"),
       plan,
       onToggleTask: (taskId, completed) => {
+        const lawTask = (plan.lawTasks ?? []).find((task) => task.id === taskId);
+        if (lawTask) {
+          const existingTracking = store.getTracking(currentDate);
+          const previousMap =
+            existingTracking.lawCompletedToday &&
+            typeof existingTracking.lawCompletedToday === "object" &&
+            !Array.isArray(existingTracking.lawCompletedToday)
+              ? existingTracking.lawCompletedToday
+              : {};
+          store.saveTracking(currentDate, {
+            lawCompletedToday: {
+              ...previousMap,
+              [lawTask.title]: completed
+            }
+          });
+        }
         planner.toggleTask(currentDate, taskId, completed);
         refresh();
       }
